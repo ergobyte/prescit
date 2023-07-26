@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+	Copyright 2023 Ergobyte Informatics S.A.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+			http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+
+-->
+<bpmn:definitions
+		xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+		xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+		xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+		xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+		xmlns:flows="http://dev.ergobyte.gr/ns/Servo/Flows"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:dct="http://purl.org/dc/terms/"
+		xmlns:mt="http://dev.ergobyte.gr/i/Types#"
+		xmlns:p="http://dev.ergobyte.gr/i/Protocols/"
+		xmlns:quadro="http://dev.ergobyte.gr/ns/Ria/Quadro"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		id="Depression" targetNamespace="http://bpmn.io/schema/bpmn">
+
+	<bpmn:collaboration id="Collaboration_1euj843">
+		<bpmn:participant id="Participant_1s4hzmc" name="Patient" processRef="Process_f1045e1e-08f7-4806-9201-8da193227feb" />
+	</bpmn:collaboration>
+
+	<!-- Process -->
+
+	<bpmn:process id="Process_f1045e1e-08f7-4806-9201-8da193227feb" isExecutable="true">
+		<bpmn:documentation>Start here</bpmn:documentation>
+		<bpmn:ioSpecification />
+		<bpmn:property id="Property_1hej8xc" itemSubjectRef="Type_Integer" name="age" flows:field-type="Number" />
+		<bpmn:property id="Property_1sk70cu" itemSubjectRef="Type_Integer" name="depsev" flows:field-type="Number" />
+		<bpmn:property id="Property_1buzwiz" itemSubjectRef="Type_Boolean" name="depsu" flows:field-type="Logical" />
+		<bpmn:property id="Property_08jxhtz" itemSubjectRef="Type_Boolean" name="docspecial" flows:field-type="Logical" />
+		<bpmn:property id="Property_03tgqr4" itemSubjectRef="Type_Integer" name="dur" flows:field-type="Number" />
+		<bpmn:property id="Property_0y8nz1g" itemSubjectRef="Type_Boolean" name="deppsy" flows:field-type="Logical" />
+		<bpmn:property id="Property_196jvra" itemSubjectRef="Type_Boolean" name="depdys" flows:field-type="Logical" />
+		<bpmn:sequenceFlow id="Flow_1vbxf64" sourceRef="Event_1qh6f19" targetRef="Activity_1yzqo9s" />
+		<bpmn:sequenceFlow id="Flow_1psy1be" name="([DEPSEV] = 1 OR [DEPSEV] = 2)	OR [DEPDYS] ) OR ([DEPSEV] = 3 AND (DOCSPECIAL &#60;&#62; 20) AND ([DUR] &#62; 5 weeks	OR [DEPSU] = 1 OR [DEPPSY] = 1) AND [CST] &#60;&#62; 1)" sourceRef="Gateway_1bdlezr" targetRef="Activity_0l2oyv2">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">
+				OR(
+					OR(F_PROPERTY("Process"; "depsev") = 1; F_PROPERTY("Process"; "depsev") = 2; F_PROPERTY("Process"; "depdys"));
+					AND(
+						F_PROPERTY("Process"; "depsev") = 3;
+						AND(
+						 NOT(F_PROPERTY("Process"; "docspecial"));
+						 OR(F_DATA_AGE("Stage") &gt; 35; F_PROPERTY("Process"; "depsu"); F_PROPERTY("Process"; "deppsy"))
+						);
+						F_DATA("Stage") &lt;&gt; 1
+					)
+				)
+			</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_0q62fch" name="[DEPSEV] = 3 AND (([DEPSU] =1 OR [DEPPSY] =1) AND (DOCSPECIAL=20) )" sourceRef="Gateway_1bdlezr" targetRef="Activity_0v2w4fa">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">
+				AND(
+					F_PROPERTY("Process"; "depsev") = 3;
+					AND(
+						OR(F_PROPERTY("Process"; "depsu"); F_PROPERTY("Process"; "deppsy"));
+						F_PROPERTY("Process"; "docspecial")
+					)
+				)
+			</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_1x71epr" sourceRef="Gateway_1bdlezr" targetRef="Activity_1rkck5d" />
+		<bpmn:sequenceFlow id="Flow_1o8mqm1" sourceRef="Activity_1rkck5d" targetRef="Event_0v27h55" />
+		<bpmn:sequenceFlow id="Flow_01a9tur" name="Yes" sourceRef="Gateway_14elohu" targetRef="Activity_1yzqo9s">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">F_OUTPUT("Previous"; "outcome") = "yes"</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:startEvent id="Event_1qh6f19" name="Start">
+			<bpmn:extensionElements>
+				<flows:workflow-status new="planned" />
+			</bpmn:extensionElements>
+			<bpmn:outgoing>Flow_1vbxf64</bpmn:outgoing>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0f6u81d">
+				<bpmn:targetRef>DataObjectReference_094yrot</bpmn:targetRef>
+				<bpmn:transformation>0</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+		</bpmn:startEvent>
+		<bpmn:sequenceFlow id="Flow_0rhi0yw" sourceRef="Activity_0lvy8j5" targetRef="Event_0v27h55" />
+		<bpmn:sequenceFlow id="Flow_1opkf6l" sourceRef="Activity_0szfcdz" targetRef="Event_0v27h55" />
+		<bpmn:sequenceFlow id="Flow_1u6lvmm" sourceRef="Activity_1ps77dh" targetRef="Event_0v27h55" />
+		<bpmn:sequenceFlow id="Flow_01g3bzk" sourceRef="Event_0v27h55" targetRef="Activity_00mz0ks" />
+		<bpmn:sequenceFlow id="Flow_185s1da" sourceRef="Activity_00mz0ks" targetRef="Gateway_14elohu" />
+		<bpmn:sequenceFlow id="Flow_05q96sn" name="No" sourceRef="Gateway_14elohu" targetRef="Event_0v27h55" />
+		<bpmn:exclusiveGateway id="Gateway_14elohu" name="Repeat TPP?" default="Flow_05q96sn">
+			<bpmn:incoming>Flow_185s1da</bpmn:incoming>
+			<bpmn:outgoing>Flow_01a9tur</bpmn:outgoing>
+			<bpmn:outgoing>Flow_05q96sn</bpmn:outgoing>
+		</bpmn:exclusiveGateway>
+		<bpmn:userTask id="Activity_1ps77dh" name="Prescribe DEPRES_3" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<dct:type>http://dev.ergobyte.gr/i/Types#reviewMedication</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_0jee12e</bpmn:incoming>
+			<bpmn:outgoing>Flow_1u6lvmm</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_1ps77dh_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1ps77dh_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1ps77dh_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1ps77dh_notificationImportance" itemSubjectRef="Type_String" name="notificationImportance" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_1ps77dh_atcCode" itemSubjectRef="Type_String" name="atcCode" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e6061","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"ATC","identifier":"atcCode","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"N06AB03":"Fluoxetine","N06AB04":"Citalopram","N06AB05":"Paroxetine","N06AB06":"Sertraline","N06AB08":"Fluvoxamine","N06AB10":"Escitalopram","N06AX05":"Trazodone","N06AX12":"Bupropion","N06AX16":"Venlafaxine","N06AX21":"Duloxetine","N06AX11":"Mirtazapine","N06AX22":"Agomelatine","N06AX26":"Vortioxetine","N06AA04":"Clomipramine","N06AA09":"Amitriptyline","N06AA21":"Maprotiline","N06AG02":"Moclobemide","N05BA02":"Chlordiazepoxide","N05BA01":"Diazepam","N05BA05":"Potassium clorazepate","N05BA06":"Lorazepam","N05BA08":"Bromazepam","N05BA09":"Clobazam","N05BA11":"Prazepam","N05BA12":"Alprazolam","N05BB01":"Hydroxyzine","N05BE01":"Buspirone","N05CD03":"Flunitrazepam","N05CD05":"Triazolam","N05CF01":"Zopiclone","N05CF02":"Zolpidem","N05CF03":"Zaleplon","N05CH01":"Melatonin","N06CA01":"Amitriptyline and psycholeptics","N05AH04":"Quetiapine","N05AH03":"Olanzapine","N05AH05":"Asenapine","N05AH02":"Clozapine","N05AA01":"Chlorpromazine","N05AA02":"Levomepromazine","N05AB06":"Trifluoperazine","N05AD05":"Pipamperone","N05AD01":"Haloperidol","N05AF05":"Zuclopenthixol","N05AG02":"Pimozide","N05AL05":"Amisulpride","N05AL01":"Sulpiride","N05AX13":"Paliperidone","N05AX08":"Risperidone","N05AX12":"Aripiprazole","N05AE04":"Ziprasidone","N05AN01":"Lithium","H03AA02":"Liothyronine sodium","N04AA02":"Biperiden","N04AB02":"Orphenadrine (chloride)","N06BA07":"Modafinil"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0io6h1j">
+				<bpmn:targetRef>Activity_1ps77dh_title</bpmn:targetRef>
+				<bpmn:transformation>"Προεπισκόπηση φαρμακευτικής αγωγής"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1qoy7al">
+				<bpmn:targetRef>Activity_1ps77dh_description</bpmn:targetRef>
+				<bpmn:transformation>"Τροποποιήστε τη φαρμακευτική αγωγή λαμβάνοντας υπόψη τους προτεινόμενους κωδικούς ATC του βήματος του θεραπευτικού πρωτοκόλλου."</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_18xro32">
+				<bpmn:targetRef>Activity_1ps77dh_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_10gzv0g">
+				<bpmn:targetRef>Activity_1ps77dh_notificationImportance</bpmn:targetRef>
+				<bpmn:transformation>"NORMAL"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:potentialOwner>
+				<bpmn:resourceRef>Resource_1lccnns</bpmn:resourceRef>
+			</bpmn:potentialOwner>
+			<bpmn:resourceRole>
+				<bpmn:resourceRef>Resource_1t4hoak</bpmn:resourceRef>
+			</bpmn:resourceRole>
+		</bpmn:userTask>
+		<bpmn:sequenceFlow id="Flow_0jee12e" sourceRef="Activity_0v2w4fa" targetRef="Activity_1ps77dh" />
+		<bpmn:userTask id="Activity_0szfcdz" name="Prescribe DEPRES_2" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<dct:type>http://dev.ergobyte.gr/i/Types#reviewMedication</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_09m26aa</bpmn:incoming>
+			<bpmn:outgoing>Flow_1opkf6l</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_0szfcdz_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0szfcdz_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0szfcdz_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0szfcdz_notificationImportance" itemSubjectRef="Type_String" name="notificationImportance" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_0szfcdz_atcCode" itemSubjectRef="Type_String" name="atcCode" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e6040","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"ATC","identifier":"atcCode","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"N06AB03":"Fluoxetine","N06AB04":"Citalopram","N06AB05":"Paroxetine","N06AB06":"Sertraline","N06AB08":"Fluvoxamine","N06AB10":"Escitalopram","N06AX05":"Trazodone","N06AX12":"Bupropion","N06AX16":"Venlafaxine","N06AX21":"Duloxetine","N06AX11":"Mirtazapine","N06AX22":"Agomelatine","N06AX26":"Vortioxetine","N06AA04":"Clomipramine","N06AA09":"Amitriptyline","N06AA21":"Maprotiline","N06AG02":"Moclobemide","N05BA02":"Chlordiazepoxide","N05BA01":"Diazepam","N05BA05":"Potassium clorazepate","N05BA06":"Lorazepam","N05BA08":"Bromazepam","N05BA09":"Clobazam","N05BA11":"Prazepam","N05BA12":"Alprazolam","N05BB01":"Hydroxyzine","N05BE01":"Buspirone","N05CD03":"Flunitrazepam","N05CD05":"Triazolam","N05CF01":"Zopiclone","N05CF02":"Zolpidem","N05CF03":"Zaleplon","N05CH01":"Melatonin","N06CA01":"Amitriptyline and psycholeptics","N05AH04":"Quetiapine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_08qdjo4">
+				<bpmn:targetRef>Activity_0szfcdz_title</bpmn:targetRef>
+				<bpmn:transformation>"Προεπισκόπηση φαρμακευτικής αγωγής"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1pnz4v0">
+				<bpmn:targetRef>Activity_0szfcdz_description</bpmn:targetRef>
+				<bpmn:transformation>"Τροποποιήστε τη φαρμακευτική αγωγή λαμβάνοντας υπόψη τους προτεινόμενους κωδικούς ATC του βήματος του θεραπευτικού πρωτοκόλλου."</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1b3w1av">
+				<bpmn:targetRef>Activity_0szfcdz_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_11j8d7r">
+				<bpmn:targetRef>Activity_0szfcdz_notificationImportance</bpmn:targetRef>
+				<bpmn:transformation>"NORMAL"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:potentialOwner>
+				<bpmn:resourceRef>Resource_1lccnns</bpmn:resourceRef>
+			</bpmn:potentialOwner>
+			<bpmn:resourceRole>
+				<bpmn:resourceRef>Resource_1t4hoak</bpmn:resourceRef>
+			</bpmn:resourceRole>
+		</bpmn:userTask>
+		<bpmn:exclusiveGateway id="Gateway_1bdlezr" default="Flow_1x71epr">
+			<bpmn:incoming>Flow_0ejn8s5</bpmn:incoming>
+			<bpmn:outgoing>Flow_1psy1be</bpmn:outgoing>
+			<bpmn:outgoing>Flow_1ts2b7c</bpmn:outgoing>
+			<bpmn:outgoing>Flow_0q62fch</bpmn:outgoing>
+			<bpmn:outgoing>Flow_1x71epr</bpmn:outgoing>
+		</bpmn:exclusiveGateway>
+		<bpmn:userTask id="Activity_1yzqo9s" name="Disease Staging" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<dct:type>http://dev.ergobyte.gr/i/Types#questionnaire</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_1vbxf64</bpmn:incoming>
+			<bpmn:incoming>Flow_01a9tur</bpmn:incoming>
+			<bpmn:outgoing>Flow_0ejn8s5</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_1yzqo9s_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1yzqo9s_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1yzqo9s_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1yzqo9s_notificationImportance" itemSubjectRef="Type_String" name="notificationImportance" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_1yzqo9s_depsev" itemSubjectRef="Type_Integer" name="depsev" flows:field-type="Number">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e5991","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Number","title":"Βαρύτητα Νόσου","identifier":"depsev","valueType":"http://dev.ergobyte.gr/i/Types#Integer","assignment":null,"calculation":null,"flags":3,"instructions":null,"userConstraints":{"options":["Ήπια","Μέτρια","Σοβαρή"]}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1yzqo9s_depsu" itemSubjectRef="Type_Boolean" name="depsu" flows:field-type="Logical">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e5993","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Logical","title":"Ένδειξη ενεργούς αυτοκτονικότητας","identifier":"depsu","valueType":"http://dev.ergobyte.gr/i/Types#Boolean","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1yzqo9s_depdys" itemSubjectRef="Type_Boolean" name="depdys" flows:field-type="Logical">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e5995","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Logical","title":"Δυσθυμία","identifier":"depdys","valueType":"http://dev.ergobyte.gr/i/Types#Boolean","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1yzqo9s_deppsy" itemSubjectRef="Type_Boolean" name="deppsy" flows:field-type="Logical">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e5997","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Logical","title":"Συνυπάρχοντα ψυχωτικά συμπτώματα","identifier":"deppsy","valueType":"http://dev.ergobyte.gr/i/Types#Boolean","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1yzqo9s_docspecial" itemSubjectRef="Type_Boolean" name="docspecial" flows:field-type="Logical">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e5999","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Logical","title":"Ειδικότητα ψυχίατρος","identifier":"docspecial","valueType":"http://dev.ergobyte.gr/i/Types#Boolean","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_05arr6c">
+				<bpmn:targetRef>Activity_1yzqo9s_title</bpmn:targetRef>
+				<bpmn:transformation>"Εισαγωγή παραμέτρων Θ.Π. κατάθλιψη"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_05qanku">
+				<bpmn:targetRef>Activity_1yzqo9s_description</bpmn:targetRef>
+				<bpmn:transformation>"Εισάγετε τις απαραίτητες παραμέτρους για να προχωρήσει η διαδικασία."</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0qy305n">
+				<bpmn:targetRef>Activity_1yzqo9s_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_11qibe7">
+				<bpmn:targetRef>Activity_1yzqo9s_notificationImportance</bpmn:targetRef>
+				<bpmn:transformation>"NORMAL"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0a6bwjl">
+				<bpmn:sourceRef>Activity_1yzqo9s_depsev</bpmn:sourceRef>
+				<bpmn:targetRef>Property_1sk70cu</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0bjs8mh">
+				<bpmn:sourceRef>Activity_1yzqo9s_depsu</bpmn:sourceRef>
+				<bpmn:targetRef>Property_1buzwiz</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0tyuz3g">
+				<bpmn:sourceRef>Activity_1yzqo9s_depdys</bpmn:sourceRef>
+				<bpmn:targetRef>Property_196jvra</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1403o5t">
+				<bpmn:sourceRef>Activity_1yzqo9s_deppsy</bpmn:sourceRef>
+				<bpmn:targetRef>Property_0y8nz1g</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1xja91b">
+				<bpmn:sourceRef>Activity_1yzqo9s_docspecial</bpmn:sourceRef>
+				<bpmn:targetRef>Property_08jxhtz</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_08uogtl">
+				<bpmn:targetRef>Property_1hej8xc</bpmn:targetRef>
+				<bpmn:transformation>DATEDIF(DGET(F_RESOURCE("patient"); "BirthDate"); TODAY(); "Y")</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+			<bpmn:potentialOwner>
+				<bpmn:resourceRef>Resource_1lccnns</bpmn:resourceRef>
+			</bpmn:potentialOwner>
+			<bpmn:resourceRole>
+				<bpmn:resourceRef>Resource_1t4hoak</bpmn:resourceRef>
+			</bpmn:resourceRole>
+		</bpmn:userTask>
+		<bpmn:sequenceFlow id="Flow_1ts2b7c" name="[DEPSEV] =3 AND (DOCSPECIAL&#60;&#62;20) AND ([DUR] &#62;5 weeks	OR [DEPSU] =1 OR [DEPPSY] =1) AND [CST]=1" sourceRef="Gateway_1bdlezr" targetRef="Activity_1oupbms">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">
+				AND(
+					F_PROPERTY("Process"; "depsev") = 3;
+					AND(
+						NOT(F_PROPERTY("Process"; "docspecial"));
+						OR(F_DATA_AGE("Stage") &gt; 35; F_PROPERTY("Process"; "depsu"); F_PROPERTY("Process"; "deppsy"))
+					 );
+					F_DATA("Stage") = 1
+				)
+			</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_09m26aa" sourceRef="Activity_1oupbms" targetRef="Activity_0szfcdz" />
+		<bpmn:sequenceFlow id="Flow_0ejn8s5" sourceRef="Activity_1yzqo9s" targetRef="Gateway_1bdlezr" />
+		<bpmn:task id="Activity_0l2oyv2" name="Stage = 1">
+			<bpmn:incoming>Flow_1psy1be</bpmn:incoming>
+			<bpmn:outgoing>Flow_0zulm6j</bpmn:outgoing>
+			<bpmn:ioSpecification />
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_09ksvas">
+				<bpmn:targetRef>DataObjectReference_094yrot</bpmn:targetRef>
+				<bpmn:transformation>1</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+		</bpmn:task>
+		<bpmn:userTask id="Activity_0lvy8j5" name="Prescribe DEPRES_1" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<dct:type>http://dev.ergobyte.gr/i/Types#reviewMedication</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_0zulm6j</bpmn:incoming>
+			<bpmn:outgoing>Flow_0rhi0yw</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_0lvy8j5_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0lvy8j5_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0lvy8j5_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0lvy8j5_notificationImportance" itemSubjectRef="Type_String" name="notificationImportance" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_0lvy8j5_atcCode" itemSubjectRef="Type_String" name="atcCode" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e6019","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"ATC","identifier":"atcCode","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"N06AB03":"Fluoxetine","N06AB04":"Citalopram","N06AB05":"Paroxetine","N06AB06":"Sertraline","N06AB08":"Fluvoxamine","N06AB10":"Escitalopram","N06AX05":"Trazodone","N06AX12":"Bupropion","N06AX16":"Venlafaxine","N06AX21":"Duloxetine","N06AX11":"Mirtazapine","N06AX22":"Agomelatine","N06AX26":"Vortioxetine","N06AA04":"Clomipramine","N06AA09":"Amitriptyline","N06AA21":"Maprotiline","N06AG02":"Moclobemide","N05BA02":"Chlordiazepoxide","N05BA01":"Diazepam","N05BA05":"Potassium clorazepate","N05BA06":"Lorazepam","N05BA08":"Bromazepam","N05BA09":"Clobazam","N05BA11":"Prazepam","N05BA12":"Alprazolam","N05BB01":"Hydroxyzine","N05BE01":"Buspirone","N05CD03":"Flunitrazepam","N05CD05":"Triazolam","N05CF01":"Zopiclone","N05CF02":"Zolpidem","N05CF03":"Zaleplon","N05CH01":"Melatonin"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1jn8wn1">
+				<bpmn:targetRef>Activity_0lvy8j5_title</bpmn:targetRef>
+				<bpmn:transformation>"Προεπισκόπηση φαρμακευτικής αγωγής"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_16nc0c1">
+				<bpmn:targetRef>Activity_0lvy8j5_description</bpmn:targetRef>
+				<bpmn:transformation>"Τροποποιήστε τη φαρμακευτική αγωγή λαμβάνοντας υπόψη τους προτεινόμενους κωδικούς ATC του βήματος του θεραπευτικού πρωτοκόλλου."</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_06w1wbq">
+				<bpmn:targetRef>Activity_0lvy8j5_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1ro8uzz">
+				<bpmn:targetRef>Activity_0lvy8j5_notificationImportance</bpmn:targetRef>
+				<bpmn:transformation>"NORMAL"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:potentialOwner>
+				<bpmn:resourceRef>Resource_1lccnns</bpmn:resourceRef>
+			</bpmn:potentialOwner>
+			<bpmn:resourceRole>
+				<bpmn:resourceRef>Resource_1t4hoak</bpmn:resourceRef>
+			</bpmn:resourceRole>
+		</bpmn:userTask>
+		<bpmn:sequenceFlow id="Flow_0zulm6j" sourceRef="Activity_0l2oyv2" targetRef="Activity_0lvy8j5" />
+		<bpmn:intermediateCatchEvent id="Event_0v27h55" name="Wait">
+			<bpmn:incoming>Flow_0rhi0yw</bpmn:incoming>
+			<bpmn:incoming>Flow_1opkf6l</bpmn:incoming>
+			<bpmn:incoming>Flow_1u6lvmm</bpmn:incoming>
+			<bpmn:incoming>Flow_1o8mqm1</bpmn:incoming>
+			<bpmn:incoming>Flow_05q96sn</bpmn:incoming>
+			<bpmn:outgoing>Flow_01g3bzk</bpmn:outgoing>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_17i4crz">
+				<bpmn:targetRef>Property_196jvra</bpmn:targetRef>
+				<bpmn:transformation>FALSE()</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0ku6fqs">
+				<bpmn:targetRef>Property_0y8nz1g</bpmn:targetRef>
+				<bpmn:transformation>FALSE()</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_18aw9pe">
+				<bpmn:targetRef>Property_1buzwiz</bpmn:targetRef>
+				<bpmn:transformation>FALSE()</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1akdzos">
+				<bpmn:targetRef>Property_08jxhtz</bpmn:targetRef>
+				<bpmn:transformation>FALSE()</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+			<bpmn:timerEventDefinition id="TimerEventDefinition_0lxpfxs">
+				<bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+			</bpmn:timerEventDefinition>
+		</bpmn:intermediateCatchEvent>
+		<bpmn:userTask id="Activity_00mz0ks" name="Evaluate Response" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<dct:type>http://dev.ergobyte.gr/i/Types#questionnaire</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_01g3bzk</bpmn:incoming>
+			<bpmn:outgoing>Flow_185s1da</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_00mz0ks_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_00mz0ks_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_00mz0ks_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_00mz0ks_notificationImportance" itemSubjectRef="Type_String" name="notificationImportance" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_00mz0ks_outcome" itemSubjectRef="Type_String" name="outcome" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e6082","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Επανέναρξη Θ.Π.;","identifier":"outcome","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":3,"instructions":null,"userConstraints":{"options":{"yes":"Ναι","no":"Όχι"}}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0s8xlw9">
+				<bpmn:targetRef>Activity_00mz0ks_title</bpmn:targetRef>
+				<bpmn:transformation>"Αξιολόγηση ασθενή"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0bclu4u">
+				<bpmn:targetRef>Activity_00mz0ks_description</bpmn:targetRef>
+				<bpmn:transformation>"Με βάση τα αποτελέσματα της αγωγής, επιλέξτε αν θα ξεκινήσετε από την αρχή το Θ.Π. κατάθλιψης ή θα περιμένετε έναν μήνα."</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1u494wc">
+				<bpmn:targetRef>Activity_00mz0ks_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_07gu01g">
+				<bpmn:targetRef>Activity_00mz0ks_notificationImportance</bpmn:targetRef>
+				<bpmn:transformation>"NORMAL"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:potentialOwner>
+				<bpmn:resourceRef>Resource_1lccnns</bpmn:resourceRef>
+			</bpmn:potentialOwner>
+		</bpmn:userTask>
+		<bpmn:task id="Activity_1oupbms" name="Stage = 2">
+			<bpmn:incoming>Flow_1ts2b7c</bpmn:incoming>
+			<bpmn:outgoing>Flow_09m26aa</bpmn:outgoing>
+			<bpmn:ioSpecification />
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0wgpdmd">
+				<bpmn:targetRef>DataObjectReference_094yrot</bpmn:targetRef>
+				<bpmn:transformation>2</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+		</bpmn:task>
+		<bpmn:task id="Activity_0v2w4fa" name="Stage = 3">
+			<bpmn:incoming>Flow_0q62fch</bpmn:incoming>
+			<bpmn:outgoing>Flow_0jee12e</bpmn:outgoing>
+			<bpmn:ioSpecification />
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0xdpwlz">
+				<bpmn:targetRef>DataObjectReference_094yrot</bpmn:targetRef>
+				<bpmn:transformation>3</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+		</bpmn:task>
+		<bpmn:dataObjectReference id="DataObjectReference_094yrot" name="Stage" dataObjectRef="DataObject_1ch6gc6" />
+		<bpmn:dataObject id="DataObject_1ch6gc6" itemSubjectRef="Type_Integer" flows:field-type="Number" />
+		<bpmn:task id="Activity_1rkck5d" name="Stage = 0">
+			<bpmn:incoming>Flow_1x71epr</bpmn:incoming>
+			<bpmn:outgoing>Flow_1o8mqm1</bpmn:outgoing>
+			<bpmn:ioSpecification />
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_16d69q6">
+				<bpmn:targetRef>DataObjectReference_094yrot</bpmn:targetRef>
+				<bpmn:transformation>0</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+		</bpmn:task>
+	</bpmn:process>
+	<bpmn:resource id="Resource_1lccnns" name="manager">
+		<bpmn:extensionElements>
+			<flows:resource-assignment>Q_USER("jenny")</flows:resource-assignment>
+		</bpmn:extensionElements>
+	</bpmn:resource>
+	<bpmn:resource id="Resource_1t4hoak" name="patient" />
+	<bpmn:itemDefinition id="Type_Integer" structureRef="mt:Integer" />
+	<bpmn:itemDefinition id="Type_Boolean" structureRef="mt:Boolean" />
+	<bpmn:itemDefinition id="Type_String" structureRef="mt:String" />
+	<bpmn:itemDefinition id="Type_Duration" structureRef="mt:Duration" />
+
+	<!-- Diagram -->
+
+	<bpmndi:BPMNDiagram id="BPMNDiagram_1">
+		<bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1euj843">
+			<bpmndi:BPMNShape id="Participant_1s4hzmc_di" bpmnElement="Participant_1s4hzmc" isHorizontal="true">
+				<dc:Bounds x="-220" y="-120" width="1210" height="710" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNEdge id="Flow_0zulm6j_di" bpmnElement="Flow_0zulm6j">
+				<di:waypoint x="70" y="170" />
+				<di:waypoint x="70" y="320" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0ejn8s5_di" bpmnElement="Flow_0ejn8s5">
+				<di:waypoint x="440" y="-23" />
+				<di:waypoint x="440" y="5" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_09m26aa_di" bpmnElement="Flow_09m26aa">
+				<di:waypoint x="440" y="250" />
+				<di:waypoint x="440" y="320" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1ts2b7c_di" bpmnElement="Flow_1ts2b7c">
+				<di:waypoint x="440" y="55" />
+				<di:waypoint x="440" y="170" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="445" y="52" width="90" height="106" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0jee12e_di" bpmnElement="Flow_0jee12e">
+				<di:waypoint x="740" y="240" />
+				<di:waypoint x="740" y="320" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_05q96sn_di" bpmnElement="Flow_05q96sn">
+				<di:waypoint x="885" y="460" />
+				<di:waypoint x="278" y="460" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="824" y="443" width="15" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_185s1da_di" bpmnElement="Flow_185s1da">
+				<di:waypoint x="650" y="530" />
+				<di:waypoint x="910" y="530" />
+				<di:waypoint x="910" y="485" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_01g3bzk_di" bpmnElement="Flow_01g3bzk">
+				<di:waypoint x="260" y="478" />
+				<di:waypoint x="260" y="530" />
+				<di:waypoint x="550" y="530" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1u6lvmm_di" bpmnElement="Flow_1u6lvmm">
+				<di:waypoint x="740" y="400" />
+				<di:waypoint x="740" y="420" />
+				<di:waypoint x="278" y="459" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1opkf6l_di" bpmnElement="Flow_1opkf6l">
+				<di:waypoint x="444" y="400" />
+				<di:waypoint x="444" y="420" />
+				<di:waypoint x="277" y="454" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0rhi0yw_di" bpmnElement="Flow_0rhi0yw">
+				<di:waypoint x="71" y="400" />
+				<di:waypoint x="71" y="420" />
+				<di:waypoint x="242" y="456" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_01a9tur_di" bpmnElement="Flow_01a9tur">
+				<di:waypoint x="910" y="435" />
+				<di:waypoint x="910" y="-63" />
+				<di:waypoint x="490" y="-63" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="881" y="394" width="18" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1o8mqm1_di" bpmnElement="Flow_1o8mqm1">
+				<di:waypoint x="-70" y="170" />
+				<di:waypoint x="-70" y="460" />
+				<di:waypoint x="242" y="460" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1x71epr_di" bpmnElement="Flow_1x71epr">
+				<di:waypoint x="415" y="30" />
+				<di:waypoint x="-70" y="30" />
+				<di:waypoint x="-70" y="90" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0q62fch_di" bpmnElement="Flow_0q62fch">
+				<di:waypoint x="465" y="30" />
+				<di:waypoint x="740" y="30" />
+				<di:waypoint x="740" y="160" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="646" y="60" width="88" height="80" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1psy1be_di" bpmnElement="Flow_1psy1be">
+				<di:waypoint x="416" y="31" />
+				<di:waypoint x="70" y="31" />
+				<di:waypoint x="70" y="90" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="146" y="54" width="87" height="172" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1vbxf64_di" bpmnElement="Flow_1vbxf64">
+				<di:waypoint x="-132" y="-63" />
+				<di:waypoint x="390" y="-63" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNShape id="Event_1qh6f19_di" bpmnElement="Event_1qh6f19">
+				<dc:Bounds x="-168" y="-81" width="36" height="36" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="-162" y="-105" width="24" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Gateway_14elohu_di" bpmnElement="Gateway_14elohu" isMarkerVisible="true">
+				<dc:Bounds x="885" y="435" width="50" height="50" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="826" y="483" width="67" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0cpdc5p_di" bpmnElement="Activity_1ps77dh">
+				<dc:Bounds x="690" y="320" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0pg90gs_di" bpmnElement="Activity_0szfcdz">
+				<dc:Bounds x="390" y="320" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Gateway_1bdlezr_di" bpmnElement="Gateway_1bdlezr" isMarkerVisible="true">
+				<dc:Bounds x="415" y="5" width="50" height="50" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0kof51h_di" bpmnElement="Activity_1yzqo9s">
+				<dc:Bounds x="390" y="-103" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0l2oyv2_di" bpmnElement="Activity_0l2oyv2">
+				<dc:Bounds x="20" y="90" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_08bimq6_di" bpmnElement="Activity_0lvy8j5">
+				<dc:Bounds x="20" y="320" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Event_0fok0qo_di" bpmnElement="Event_0v27h55">
+				<dc:Bounds x="242" y="442" width="36" height="36" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="239" y="418" width="22" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0tqsu4j_di" bpmnElement="Activity_00mz0ks">
+				<dc:Bounds x="550" y="490" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_1oupbms_di" bpmnElement="Activity_1oupbms">
+				<dc:Bounds x="390" y="170" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0v2w4fa_di" bpmnElement="Activity_0v2w4fa">
+				<dc:Bounds x="690" y="160" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="DataObjectReference_094yrot_di" bpmnElement="DataObjectReference_094yrot">
+				<dc:Bounds x="242" y="265" width="36" height="50" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="245" y="325" width="29" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_1rkck5d_di" bpmnElement="Activity_1rkck5d">
+				<dc:Bounds x="-120" y="90" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNEdge id="DataOutputAssociation_0f6u81d_di" bpmnElement="DataOutputAssociation_0f6u81d">
+				<di:waypoint x="-150" y="-45" />
+				<di:waypoint x="-150" y="290" />
+				<di:waypoint x="242" y="290" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="DataOutputAssociation_09ksvas_di" bpmnElement="DataOutputAssociation_09ksvas">
+				<di:waypoint x="90" y="170" />
+				<di:waypoint x="150" y="290" />
+				<di:waypoint x="242" y="290" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="DataOutputAssociation_0wgpdmd_di" bpmnElement="DataOutputAssociation_0wgpdmd">
+				<di:waypoint x="415" y="250" />
+				<di:waypoint x="390" y="290" />
+				<di:waypoint x="278" y="290" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="DataOutputAssociation_0xdpwlz_di" bpmnElement="DataOutputAssociation_0xdpwlz">
+				<di:waypoint x="718" y="240" />
+				<di:waypoint x="690" y="290" />
+				<di:waypoint x="278" y="290" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="DataOutputAssociation_16d69q6_di" bpmnElement="DataOutputAssociation_16d69q6">
+				<di:waypoint x="-50" y="170" />
+				<di:waypoint x="10" y="290" />
+				<di:waypoint x="242" y="290" />
+			</bpmndi:BPMNEdge>
+		</bpmndi:BPMNPlane>
+	</bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

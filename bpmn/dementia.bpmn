@@ -1,0 +1,1006 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+	Copyright 2023 Ergobyte Informatics S.A.
+
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+
+			http://www.apache.org/licenses/LICENSE-2.0
+
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+
+-->
+<bpmn:definitions
+		xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+		xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+		xmlns:flows="http://dev.ergobyte.gr/ns/Servo/Flows"
+		xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+		xmlns:dct="http://purl.org/dc/terms/"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:mt="http://dev.ergobyte.gr/i/Types#"
+		xmlns:p="http://dev.ergobyte.gr/i/Protocols/"
+		id="Dementia" targetNamespace="http://bpmn.io/schema/bpmn">
+
+	<bpmn:collaboration id="Collaboration_00532b8">
+		<bpmn:participant id="Participant_0yw7mkl" name="Θ.Π." processRef="Process_f1045e1e-08f7-4806-9201-8da193227feb" />
+	</bpmn:collaboration>
+
+	<!-- Process -->
+
+	<bpmn:process id="Process_f1045e1e-08f7-4806-9201-8da193227feb" name="main" isExecutable="true">
+		<bpmn:documentation>Start here</bpmn:documentation>
+		<bpmn:extensionElements />
+		<bpmn:ioSpecification />
+		<bpmn:property id="Property_0n2gr40" itemSubjectRef="Type_Integer" name="alz" flows:field-type="Number" />
+		<bpmn:property id="Property_0v7xt9s" itemSubjectRef="Type_Boolean" name="mdd" flows:field-type="Logical" />
+		<bpmn:property id="Property_0hq09th" itemSubjectRef="Type_Boolean" name="mdb" flows:field-type="Logical" />
+		<bpmn:property id="Property_0o5n3d1" itemSubjectRef="Type_Boolean" name="st2" flows:field-type="Logical" />
+		<bpmn:property id="Property_1cffswe" itemSubjectRef="Type_Integer" name="step" flows:field-type="Number" />
+		<bpmn:property id="Property_07e0gvg" itemSubjectRef="Type_String" name="package" flows:field-type="Text" />
+		<bpmn:property id="Property_1p56pzw" itemSubjectRef="Type_DateTime" name="date" flows:field-type="DateTime" />
+		<bpmn:sequenceFlow id="Flow_18ykmp1" sourceRef="Event_0qdcpdh" targetRef="Activity_11r589m" />
+		<bpmn:sequenceFlow id="Flow_0e3h5g6" sourceRef="Activity_11r589m" targetRef="Activity_1l5hday" />
+		<bpmn:sequenceFlow id="Flow_0b053ak" sourceRef="Activity_1l5hday" targetRef="Gateway_0qetpi9" />
+		<bpmn:sequenceFlow id="Flow_17unoow" name="1" sourceRef="Gateway_0qetpi9" targetRef="Activity_1q9pu2j">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">
+				OR(
+					AND(
+					 F_PROPERTY("Process"; "step") = 0;
+					 NOT(F_PROPERTY("Process"; "st2"))
+				 ); 
+					AND(
+					 F_PROPERTY("Process"; "step") = 1;
+				NOT(F_PROPERTY("Process"; "st2"))
+					)
+				)
+			</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_1wg7w2d" name="2" sourceRef="Gateway_0qetpi9" targetRef="Activity_0hhin6c">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">
+				AND(F_PROPERTY("Process"; "step") = 0; F_PROPERTY("Process"; "st2"))
+			</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_01y1v3p" name="?" sourceRef="Gateway_0qetpi9" targetRef="Activity_03rl7q9">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">
+				OR(
+					AND(
+						NOT(F_PROPERTY("Process"; "step") = 0);
+						NOT(F_PROPERTY("Process"; "step") = 1)
+					); 
+					AND(
+						F_PROPERTY("Process"; "step") = 1;
+						F_PROPERTY("Process"; "st2")
+					)
+				)
+			</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_1p49y51" sourceRef="Activity_03rl7q9" targetRef="Gateway_0p2rdyc" />
+		<bpmn:sequenceFlow id="Flow_0gil37u" name="1" sourceRef="Gateway_0p2rdyc" targetRef="Activity_1q9pu2j">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">
+				F_OUTPUT("Previous"; "nextStep") = "step1"
+			</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_197a3r8" name="2" sourceRef="Gateway_0p2rdyc" targetRef="Activity_0hhin6c" />
+		<bpmn:sequenceFlow id="Flow_1rrp31f" sourceRef="Activity_1q9pu2j" targetRef="Gateway_15f6q0s" />
+		<bpmn:userTask id="Activity_1l5hday" name="Εισαγωγή παραμέτρων" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(AND(alz = 1; mdb); "Οι διαταραχές συμπεριφοράς δεν συνδυάζονται με Πρώιμη - ήπια Alzheimer")
+				</flows:form-constraint>
+				<flows:form-constraint>
+					IF(AND((OR(alz = 2; alz = 3));mdd); "Οι νοητικές διαταραχές και διαταραχές κατάθλιψης συνδυάζονται μόνο με Πρώιμη - ήπια Alzheimer")
+				</flows:form-constraint>
+				<flows:form-constraint>
+					IF(ISBLANK(alz); "Η συμπλήρωση της κλινικής εκτίμησης άνοιας είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:title xml:lang="el">Εισαγωγή παραμέτρων Θ.Π. Άνοιας</dct:title>
+				<dct:description xml:lang="el">&lt;p&gt;Εισάγετε περισσότερες πληροφορίες για το περιστατικό προκειμένου να ανακατευθυνθείτε στο κατάλληλο βήμα του πρωτοκόλλου. Η συμπλήρωση της κλινικής εκτίμησης άνοιας είναι υποχρεωτική.&lt;/p&gt;</dct:description>
+				<dct:type>http://dev.ergobyte.gr/i/Types#questionnaire</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_0e3h5g6</bpmn:incoming>
+			<bpmn:outgoing>Flow_0b053ak</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_1l5hday_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1l5hday_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1l5hday_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_1l5hday_alz" itemSubjectRef="Type_Integer" name="alz" flows:field-type="Number">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e87","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Number","identifier":"alz","valueType":"http://dev.ergobyte.gr/i/Types#Integer","title":"Κλινική εκτίμηση άνοιας","flags":3,"calculation":null,"instructions":null,"userConstraints":{"options":["Πρώιμη-ήπια νόσος Alzheimer (ενδεικτικά MMSE&gt;20)","Μέσου σταδίου νόσος Alzheimer (ενδεικτικά MMSE 10-20)","Προχωρημένου σταδίου νόσος Alzheimer (ενδεικτικά MMSE&lt;10)"]},"assignment":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1l5hday_mdd" itemSubjectRef="Type_Boolean" name="mdd" flows:field-type="Logical">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e89","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Logical","identifier":"mdd","valueType":"http://dev.ergobyte.gr/i/Types#Boolean","title":"Συνύπαρξη νοητικών διαταραχών και διαταραχών κατάθλιψης","flags":1,"calculation":null,"instructions":null,"userConstraints":null,"assignment":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1l5hday_mdb" itemSubjectRef="Type_Boolean" name="mdb" flows:field-type="Logical">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e91","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Logical","identifier":"mdb","valueType":"http://dev.ergobyte.gr/i/Types#Boolean","title":"Συνύπαρξη νοητικών διαταραχών, ή/και διαταραχών κατάθλιψης, ή/και διαταραχών της συμπεριφοράς","flags":1,"calculation":null,"instructions":null,"userConstraints":null,"assignment":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1l5hday_st2" itemSubjectRef="Type_Boolean" name="st2" flows:field-type="Logical">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e93","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Logical","identifier":"st2","valueType":"http://dev.ergobyte.gr/i/Types#Boolean","title":"Παρενέργειες ή ελλιπής αποτελεσματικότητα των φαρμάκων πρώτης επιλογής","flags":1,"calculation":null,"instructions":null,"userConstraints":null,"assignment":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1l5hday_date" itemSubjectRef="Type_DateTime" name="date" flows:field-type="DateTime">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e95","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"DateTime","identifier":"date","valueType":"http://dev.ergobyte.gr/i/Types#DateTime","title":"Ημερομηνία εισαγωγής","flags":1,"calculation":null,"instructions":null,"userConstraints":null,"assignment":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_04g8ur7">
+				<bpmn:targetRef>Activity_1l5hday_title</bpmn:targetRef>
+				<bpmn:transformation>"Εισαγωγή παραμέτρων Θ.Π. Άνοιας"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_09p2k4z">
+				<bpmn:targetRef>Activity_1l5hday_description</bpmn:targetRef>
+				<bpmn:transformation>"Εισάγετε τις απαραίτητες παραμέτρους για να προχωρήσει η διαδικασία."</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1o38llx">
+				<bpmn:targetRef>Activity_1l5hday_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1pm9qgd">
+				<bpmn:sourceRef>Activity_1l5hday_alz</bpmn:sourceRef>
+				<bpmn:targetRef>Property_0n2gr40</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1cvga3a">
+				<bpmn:sourceRef>Activity_1l5hday_mdd</bpmn:sourceRef>
+				<bpmn:targetRef>Property_0v7xt9s</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1bsvs5f">
+				<bpmn:sourceRef>Activity_1l5hday_mdb</bpmn:sourceRef>
+				<bpmn:targetRef>Property_0hq09th</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0r0rhxv">
+				<bpmn:sourceRef>Activity_1l5hday_st2</bpmn:sourceRef>
+				<bpmn:targetRef>Property_0o5n3d1</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0tv2asx">
+				<bpmn:sourceRef>Activity_1l5hday_date</bpmn:sourceRef>
+				<bpmn:targetRef>Property_1p56pzw</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:exclusiveGateway id="Gateway_0qetpi9" default="Flow_01y1v3p">
+			<bpmn:incoming>Flow_0b053ak</bpmn:incoming>
+			<bpmn:outgoing>Flow_17unoow</bpmn:outgoing>
+			<bpmn:outgoing>Flow_1wg7w2d</bpmn:outgoing>
+			<bpmn:outgoing>Flow_01y1v3p</bpmn:outgoing>
+		</bpmn:exclusiveGateway>
+		<bpmn:task id="Activity_1q9pu2j" name="Step = 1">
+			<bpmn:incoming>Flow_17unoow</bpmn:incoming>
+			<bpmn:incoming>Flow_0gil37u</bpmn:incoming>
+			<bpmn:outgoing>Flow_1rrp31f</bpmn:outgoing>
+			<bpmn:ioSpecification />
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0zhzc9s">
+				<bpmn:targetRef>Property_1cffswe</bpmn:targetRef>
+				<bpmn:transformation>1</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+		</bpmn:task>
+		<bpmn:task id="Activity_0hhin6c" name="Step = 2">
+			<bpmn:incoming>Flow_1wg7w2d</bpmn:incoming>
+			<bpmn:incoming>Flow_197a3r8</bpmn:incoming>
+			<bpmn:outgoing>Flow_05h3r0k</bpmn:outgoing>
+			<bpmn:ioSpecification />
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1qvde7c">
+				<bpmn:targetRef>Property_1cffswe</bpmn:targetRef>
+				<bpmn:transformation>2</bpmn:transformation>
+			</bpmn:dataOutputAssociation>
+		</bpmn:task>
+		<bpmn:userTask id="Activity_0shb3ha" name="ALZMER1_11" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_0rnwfw9</bpmn:incoming>
+			<bpmn:outgoing>Flow_09klw69</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_0shb3ha_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0shb3ha_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_0shb3ha_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1380","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"rivastigmine":"Rivastigmine","galantamine":"Galantamine","donepezil":"Donepezil"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_0shb3ha_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0nhek2e">
+				<bpmn:targetRef>Activity_0shb3ha_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0267ut9">
+				<bpmn:targetRef>Activity_0shb3ha_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0aek36o">
+				<bpmn:sourceRef>Activity_0shb3ha_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:userTask id="Activity_0hvzyen" name="ALZMER1_12" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_1xronf4</bpmn:incoming>
+			<bpmn:outgoing>Flow_0rslvno</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_0hvzyen_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0hvzyen_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_0hvzyen_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1396","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"rivastigmine":"Rivastigmine","galantamine":"Galantamine","donepezil":"Donepezil","citalopram":"Citalopram","fluoxetine":"Fluoxetine","paroxetine":"Paroxetine","sertraline":"Sertraline","escitalopram":"Escitalopram","mirtazapine":"Mirtazapine","venlafaxine":"Venlafaxine","duloxetine":"Duloxetine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_0hvzyen_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_0hvzyen_comorbidities" itemSubjectRef="Type_String" name="comorbidities" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1399","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Comorbidities","identifier":"comorbidities","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"depression-secondary-to-dementia":"concept"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_16gyqe1">
+				<bpmn:targetRef>Activity_0hvzyen_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1uatq04">
+				<bpmn:targetRef>Activity_0hvzyen_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1sifkff">
+				<bpmn:sourceRef>Activity_0hvzyen_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:userTask id="Activity_001nojy" name="ALZMER1_21" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_0dlek4k</bpmn:incoming>
+			<bpmn:outgoing>Flow_1ft10e5</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_001nojy_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_001nojy_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_001nojy_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1414","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"rivastigmine":"Rivastigmine","galantamine":"Galantamine","donepezil":"Donepezil","memantine":"Memantine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_001nojy_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_13htis0">
+				<bpmn:targetRef>Activity_001nojy_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_18vxzdx">
+				<bpmn:targetRef>Activity_001nojy_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1upospv">
+				<bpmn:sourceRef>Activity_001nojy_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:exclusiveGateway id="Gateway_15f6q0s">
+			<bpmn:incoming>Flow_1rrp31f</bpmn:incoming>
+			<bpmn:outgoing>Flow_0rnwfw9</bpmn:outgoing>
+			<bpmn:outgoing>Flow_1xronf4</bpmn:outgoing>
+			<bpmn:outgoing>Flow_0dlek4k</bpmn:outgoing>
+			<bpmn:outgoing>Flow_1tmsnnb</bpmn:outgoing>
+			<bpmn:outgoing>Flow_1swbrue</bpmn:outgoing>
+			<bpmn:outgoing>Flow_19sq47c</bpmn:outgoing>
+		</bpmn:exclusiveGateway>
+		<bpmn:userTask id="Activity_0h58ncz" name="ALZMER1_22" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_1tmsnnb</bpmn:incoming>
+			<bpmn:outgoing>Flow_0uigydl</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_0h58ncz_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0h58ncz_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_0h58ncz_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1432","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"rivastigmine":"Rivastigmine","galantamine":"Galantamine","donepezil":"Donepezil","memantine":"Memantine","citalopram":"Citalopram","fluoxetine":"Fluoxetine","paroxetine":"Paroxetine","sertraline":"Sertraline","escitalopram":"Escitalopram","mirtazapine":"Mirtazapine","venlafaxine":"Venlafaxine","duloxetine":"Duloxetine","quetiapine":"Quetiapine","risperidone":"Risperidone","olanzapine":"Olanzapine","ziprasidone":"Ziprasidone","aripiprazole":"Aripiprazole","haloperidol":"Haloperidol"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_0h58ncz_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_0h58ncz_comorbidities" itemSubjectRef="Type_String" name="comorbidities" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1435","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Comorbidities","identifier":"comorbidities","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"depression-secondary-to-dementia":"concept","behavioral-disturbance-due-to-dementia":"concept"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_12voxix">
+				<bpmn:targetRef>Activity_0h58ncz_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_14kq7ed">
+				<bpmn:targetRef>Activity_0h58ncz_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_18x8qwa">
+				<bpmn:sourceRef>Activity_0h58ncz_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:userTask id="Activity_005dhr9" name="ALZMER1_31" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_1swbrue</bpmn:incoming>
+			<bpmn:outgoing>Flow_0ds46yx</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_005dhr9_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_005dhr9_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_005dhr9_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1450","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"memantine":"Memantine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_005dhr9_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0e2jt1o">
+				<bpmn:targetRef>Activity_005dhr9_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0ih4gk7">
+				<bpmn:targetRef>Activity_005dhr9_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0yurvtz">
+				<bpmn:sourceRef>Activity_005dhr9_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:userTask id="Activity_0xbkg2c" name="ALZMER1_32" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_19sq47c</bpmn:incoming>
+			<bpmn:outgoing>Flow_1flhc3q</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_0xbkg2c_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_0xbkg2c_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_0xbkg2c_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1466","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"memantine":"Memantine","citalopram":"Citalopram","sertraline":"Sertraline","escitalopram":"Escitalopram","paroxetine":"Paroxetine","fluoxetine":"Fluoxetine","mirtazapine":"Mirtazapine","venlafaxine":"Venlafaxine","duloxetine":"Duloxetine","quetiapine":"Quetiapine","risperidone":"Risperidone","olanzapine":"Olanzapine","ziprasidone":"Ziprasidone","aripiprazole":"Aripiprazole","clozapine":"Clozapine","haloperidol":"Haloperidol","chlorpromazine":"Chlorpromazine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_0xbkg2c_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_0xbkg2c_comorbidities" itemSubjectRef="Type_String" name="comorbidities" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1469","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Comorbidities","identifier":"comorbidities","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"depression-secondary-to-dementia":"concept","behavioral-disturbance-due-to-dementia":"concept"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1wd62h1">
+				<bpmn:targetRef>Activity_0xbkg2c_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1j7dtaz">
+				<bpmn:targetRef>Activity_0xbkg2c_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_15wmxof">
+				<bpmn:sourceRef>Activity_0xbkg2c_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:sequenceFlow id="Flow_0rnwfw9" name="alz = 1 and !mdd" sourceRef="Gateway_15f6q0s" targetRef="Activity_0shb3ha">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 1; NOT(F_PROPERTY("Process"; "mdd")))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_1xronf4" name="alz = 1 and mdd" sourceRef="Gateway_15f6q0s" targetRef="Activity_0hvzyen">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 1; F_PROPERTY("Process"; "mdd"))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_0dlek4k" name="alz = 2 and !mdb" sourceRef="Gateway_15f6q0s" targetRef="Activity_001nojy">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 2; NOT(F_PROPERTY("Process"; "mdb")))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_1tmsnnb" name="alz = 2 and mdb" sourceRef="Gateway_15f6q0s" targetRef="Activity_0h58ncz">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 2; F_PROPERTY("Process"; "mdb"))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_1swbrue" name="alz = 3 and !mdb" sourceRef="Gateway_15f6q0s" targetRef="Activity_005dhr9">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 3; NOT(F_PROPERTY("Process"; "mdb")))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_19sq47c" name="alz = 3 and mdb" sourceRef="Gateway_15f6q0s" targetRef="Activity_0xbkg2c">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 3; F_PROPERTY("Process"; "mdb"))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_09klw69" sourceRef="Activity_0shb3ha" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_0rslvno" sourceRef="Activity_0hvzyen" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_1ft10e5" sourceRef="Activity_001nojy" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_0uigydl" sourceRef="Activity_0h58ncz" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_0ds46yx" sourceRef="Activity_005dhr9" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_1flhc3q" sourceRef="Activity_0xbkg2c" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_05h3r0k" sourceRef="Activity_0hhin6c" targetRef="Gateway_0x3rvsa" />
+		<bpmn:exclusiveGateway id="Gateway_0x3rvsa">
+			<bpmn:incoming>Flow_05h3r0k</bpmn:incoming>
+			<bpmn:outgoing>Flow_0mz635n</bpmn:outgoing>
+			<bpmn:outgoing>Flow_09thq7l</bpmn:outgoing>
+			<bpmn:outgoing>Flow_03a9xzk</bpmn:outgoing>
+			<bpmn:outgoing>Flow_1ic287a</bpmn:outgoing>
+		</bpmn:exclusiveGateway>
+		<bpmn:sequenceFlow id="Flow_0mz635n" name="alz = 1 and !mdd" sourceRef="Gateway_0x3rvsa" targetRef="Activity_1xqzyfb">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 1; NOT(F_PROPERTY("Process"; "mdd")))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_09thq7l" name="alz = 1 and mdd" sourceRef="Gateway_0x3rvsa" targetRef="Activity_16ufaqh">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(F_PROPERTY("Process"; "alz") = 1; F_PROPERTY("Process"; "mdd"))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_03a9xzk" name="(alz = 2 or alz = 3) and !mdb" sourceRef="Gateway_0x3rvsa" targetRef="Activity_1hzunkj">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(OR(F_PROPERTY("Process"; "alz") = 2; F_PROPERTY("Process"; "alz") = 3); NOT(F_PROPERTY("Process"; "mdb")))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:sequenceFlow id="Flow_1ic287a" name="(alz = 2 or alz	= 3) and mdb" sourceRef="Gateway_0x3rvsa" targetRef="Activity_1y96r3a">
+			<bpmn:conditionExpression xsi:type="bpmn:tFormalExpression" language="urn:iso:std:iso-iec:26300:-2">AND(OR(F_PROPERTY("Process"; "alz") = 2; F_PROPERTY("Process"; "alz") = 3); F_PROPERTY("Process"; "mdb"))</bpmn:conditionExpression>
+		</bpmn:sequenceFlow>
+		<bpmn:userTask id="Activity_1xqzyfb" name="ALZMER2_11" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_0mz635n</bpmn:incoming>
+			<bpmn:outgoing>Flow_0654thb</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_1xqzyfb_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1xqzyfb_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_1xqzyfb_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1486","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"memantine":"Memantine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1xqzyfb_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0fgprsq">
+				<bpmn:targetRef>Activity_1xqzyfb_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1fuw1sk">
+				<bpmn:targetRef>Activity_1xqzyfb_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_1ci57n1">
+				<bpmn:sourceRef>Activity_1xqzyfb_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:userTask id="Activity_16ufaqh" name="ALZMER2_12" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_09thq7l</bpmn:incoming>
+			<bpmn:outgoing>Flow_0j1bdml</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_16ufaqh_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_16ufaqh_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_16ufaqh_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1502","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δρασική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"memantine":"Memantine","citalopram":"Citalopram","sertraline":"Sertraline","escitalopram":"Escitalopram","paroxetine":"Paroxetine","fluoxetine":"Fluoxetine","mirtazapine":"Mirtazapine","venlafaxine":"Venlafaxine","duloxetine":"Duloxetine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_16ufaqh_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_16ufaqh_comorbidities" itemSubjectRef="Type_String" name="comorbidities" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1505","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Comorbidities","identifier":"comorbidities","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"depression-secondary-to-dementia":"concept"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0ctdte6">
+				<bpmn:targetRef>Activity_16ufaqh_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_039i3yd">
+				<bpmn:targetRef>Activity_16ufaqh_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0t9fiq9">
+				<bpmn:sourceRef>Activity_16ufaqh_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:userTask id="Activity_1hzunkj" name="ALZMER2_21" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_03a9xzk</bpmn:incoming>
+			<bpmn:outgoing>Flow_0xblkwm</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_1hzunkj_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1hzunkj_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_1hzunkj_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1520","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"rivastigmine":"Rivastigmine","galantamine":"Galantamine","donepezil":"Donepezil"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1hzunkj_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1lxz6uz">
+				<bpmn:targetRef>Activity_1hzunkj_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1nxe31r">
+				<bpmn:targetRef>Activity_1hzunkj_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0r9cczx">
+				<bpmn:sourceRef>Activity_1hzunkj_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:userTask id="Activity_1y96r3a" name="ALZMER2_22" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(F_OUTPUT("Current"; "package")); "Η επιλογή σκευάσματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#selectSubstance</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_1ic287a</bpmn:incoming>
+			<bpmn:outgoing>Flow_0iqqyfm</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_1y96r3a_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_1y96r3a_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_1y96r3a_substance" itemSubjectRef="Type_String" name="substance" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1536","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Δραστική ουσία","identifier":"substance","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"memantine":"Memantine","citalopram":"Citalopram","sertraline":"Sertraline","escitalopram":"Escitalopram","paroxetine":"Paroxetine","fluoxetine":"Fluoxetine","mirtazapine":"Mirtazapine","venlafaxine":"Venlafaxine","duloxetine":"Duloxetine","quetiapine":"Quetiapine","risperidone":"Risperidone","olanzapine":"Olanzapine","ziprasidone":"Ziprasidone","aripiprazole":"Aripiprazole","clozapine":"Clozapine","haloperidol":"Haloperidol","chlorpromazine":"Chlorpromazine"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1y96r3a_package" itemSubjectRef="Type_String" name="package" flows:field-type="Text">
+					<bpmn:extensionElements />
+				</bpmn:dataOutput>
+				<bpmn:dataOutput id="Activity_1y96r3a_comorbidities" itemSubjectRef="Type_String" name="comorbidities" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e1539","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Comorbidities","identifier":"comorbidities","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"depression-secondary-to-dementia":"concept","behavioral-disturbance-due-to-dementia":"concept"}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_09yowut">
+				<bpmn:targetRef>Activity_1y96r3a_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_0mnpiur">
+				<bpmn:targetRef>Activity_1y96r3a_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή αγωγής βήματος " &amp; F_PROPERTY("Process"; "step")</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0zejb55">
+				<bpmn:sourceRef>Activity_1y96r3a_package</bpmn:sourceRef>
+				<bpmn:targetRef>Property_07e0gvg</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:sequenceFlow id="Flow_0654thb" sourceRef="Activity_1xqzyfb" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_0j1bdml" sourceRef="Activity_16ufaqh" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_0xblkwm" sourceRef="Activity_1hzunkj" targetRef="Event_0c90bnk" />
+		<bpmn:sequenceFlow id="Flow_0iqqyfm" sourceRef="Activity_1y96r3a" targetRef="Event_0c90bnk" />
+		<bpmn:endEvent id="Event_0c90bnk" name="Ολοκληρώθηκε">
+			<bpmn:extensionElements>
+				<flows:workflow-status new="complete" />
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_09klw69</bpmn:incoming>
+			<bpmn:incoming>Flow_0rslvno</bpmn:incoming>
+			<bpmn:incoming>Flow_1ft10e5</bpmn:incoming>
+			<bpmn:incoming>Flow_0uigydl</bpmn:incoming>
+			<bpmn:incoming>Flow_0ds46yx</bpmn:incoming>
+			<bpmn:incoming>Flow_1flhc3q</bpmn:incoming>
+			<bpmn:incoming>Flow_0654thb</bpmn:incoming>
+			<bpmn:incoming>Flow_0j1bdml</bpmn:incoming>
+			<bpmn:incoming>Flow_0xblkwm</bpmn:incoming>
+			<bpmn:incoming>Flow_0iqqyfm</bpmn:incoming>
+		</bpmn:endEvent>
+		<bpmn:userTask id="Activity_11r589m" name="Επιλογή βήματος" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(ISBLANK(step); "Η επιλογή βήματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:title xml:lang="el">Εισαγωγή βήματος</dct:title>
+				<dct:description xml:lang="el">&lt;p&gt;Επιλέξτε το βήμα του πρωτοκόλλου στο οποίο βρίσκεται ο ασθενής. Το βήμα συνδυάζει την πληροφορία των φαρμάκων που έχει λάβει ο ασθενής για την πάθηση και τον βαθμό ανταπόκρισής του σε αυτά. Για παράδειγμα, το βήμα 0 σημαίνει ότι ο ασθενής δεν λαμβάνει αγωγή για την πάθηση, ενώ το βήμα 1 σημαίνει ότι λαμβάνει τα φάρμακα 1ης επιλογής.&lt;/p&gt;</dct:description>
+				<dct:type>http://dev.ergobyte.gr/i/Types#questionnaire</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_18ykmp1</bpmn:incoming>
+			<bpmn:outgoing>Flow_0e3h5g6</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_11r589m_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_11r589m_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_11r589m_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_11r589m_step" itemSubjectRef="Type_Integer" name="step" flows:field-type="Number">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e87","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Number","identifier":"step","valueType":"http://dev.ergobyte.gr/i/Types#Integer","title":"Βήμα","flags":3,"calculation":null,"instructions":null,"userConstraints":{"options":{"0":"Βήμα 0","1":"Βήμα 1","2":"Βήμα 2"}},"assignment":null}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1im4psf">
+				<bpmn:targetRef>Activity_11r589m_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_096bm4g">
+				<bpmn:targetRef>Activity_11r589m_title</bpmn:targetRef>
+				<bpmn:transformation>"Εισαγωγή βήματος"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1s6mtvv">
+				<bpmn:targetRef>Activity_11r589m_description</bpmn:targetRef>
+				<bpmn:transformation>"Επιλέξτε το βήμα που βρίσκεται ο ασθενής"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataOutputAssociation id="DataOutputAssociation_0av8vpn">
+				<bpmn:sourceRef>Activity_11r589m_step</bpmn:sourceRef>
+				<bpmn:targetRef>Property_1cffswe</bpmn:targetRef>
+			</bpmn:dataOutputAssociation>
+		</bpmn:userTask>
+		<bpmn:startEvent id="Event_0qdcpdh" name="Ζητήθηκε">
+			<bpmn:extensionElements>
+				<flows:workflow-status new="requested" />
+			</bpmn:extensionElements>
+			<bpmn:outgoing>Flow_18ykmp1</bpmn:outgoing>
+		</bpmn:startEvent>
+		<bpmn:userTask id="Activity_03rl7q9" name="1 ή 2" implementation="http://dev.ergobyte.gr/i/Protocols/flows/quadro/fileTask">
+			<bpmn:extensionElements>
+				<flows:form-constraint>
+					IF(F_OUTPUT("Current"; "nextStep"); "Η επιλογή βήματος είναι υποχρεωτική.")
+				</flows:form-constraint>
+				<dct:type>http://dev.ergobyte.gr/i/Types#questionnaire</dct:type>
+			</bpmn:extensionElements>
+			<bpmn:incoming>Flow_01y1v3p</bpmn:incoming>
+			<bpmn:outgoing>Flow_1p49y51</bpmn:outgoing>
+			<bpmn:ioSpecification>
+				<bpmn:dataInput id="Activity_03rl7q9_title" itemSubjectRef="Type_String" name="title" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_03rl7q9_series" itemSubjectRef="Type_String" name="series" flows:field-type="Text" />
+				<bpmn:dataInput id="Activity_03rl7q9_description" itemSubjectRef="Type_String" name="description" flows:field-type="Text" />
+				<bpmn:dataOutput id="Activity_03rl7q9_nextStep" itemSubjectRef="Type_String" name="nextStep" flows:field-type="Text">
+					<bpmn:extensionElements>
+						<flows:field-rendering>{"@key":"e6388","@protocol":"http://dev.ergobyte.gr/i/Protocols/quadro/template/field","userInterface":"Text","title":"Βήμα","identifier":"nextStep","valueType":"http://dev.ergobyte.gr/i/Types#String","assignment":null,"calculation":null,"flags":1,"instructions":null,"userConstraints":{"options":{"step1":"Βήμα 1","step2":"Βήμα 2"}}}</flows:field-rendering>
+					</bpmn:extensionElements>
+				</bpmn:dataOutput>
+			</bpmn:ioSpecification>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1x3fab8">
+				<bpmn:targetRef>Activity_03rl7q9_title</bpmn:targetRef>
+				<bpmn:transformation>"Επιλογή επόμενου βήματος"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_1j3ovd4">
+				<bpmn:targetRef>Activity_03rl7q9_series</bpmn:targetRef>
+				<bpmn:transformation>"T"</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+			<bpmn:dataInputAssociation id="DataInputAssociation_089dfng">
+				<bpmn:targetRef>Activity_03rl7q9_description</bpmn:targetRef>
+				<bpmn:transformation>"Επιλέξτε με ποιο βήμα επιθυμείτε να συνεχίσετε."</bpmn:transformation>
+			</bpmn:dataInputAssociation>
+		</bpmn:userTask>
+		<bpmn:exclusiveGateway id="Gateway_0p2rdyc" default="Flow_197a3r8">
+			<bpmn:incoming>Flow_1p49y51</bpmn:incoming>
+			<bpmn:outgoing>Flow_0gil37u</bpmn:outgoing>
+			<bpmn:outgoing>Flow_197a3r8</bpmn:outgoing>
+		</bpmn:exclusiveGateway>
+	</bpmn:process>
+	<bpmn:itemDefinition id="Type_String" structureRef="mt:String" />
+	<bpmn:itemDefinition id="Type_Uri" structureRef="mt:Uri" />
+	<bpmn:itemDefinition id="Type_Boolean" structureRef="mt:Boolean" />
+	<bpmn:resource id="Resource_1ub0cxd" name="manager">
+		<bpmn:extensionElements>
+			<flows:resource-assignment>Q_USER("jenny")</flows:resource-assignment>
+		</bpmn:extensionElements>
+	</bpmn:resource>
+	<bpmn:itemDefinition id="Type_Integer" structureRef="mt:Integer" />
+	<bpmn:itemDefinition id="Type_Date" structureRef="mt:Date" />
+	<bpmn:itemDefinition id="Type_DateTime" structureRef="mt:DateTime" />
+	<bpmn:itemDefinition id="Type_Duration" structureRef="mt:Duration" />
+	<bpmn:itemDefinition id="Type_Period" structureRef="mt:Period" />
+
+	<!-- Diagram -->
+
+	<bpmndi:BPMNDiagram id="BPMNDiagram_1">
+		<bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_00532b8">
+			<bpmndi:BPMNShape id="Participant_0yw7mkl_di" bpmnElement="Participant_0yw7mkl" isHorizontal="true">
+				<dc:Bounds x="-300" y="340" width="1145" height="1090" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNEdge id="Flow_0iqqyfm_di" bpmnElement="Flow_0iqqyfm">
+				<di:waypoint x="640" y="1019" />
+				<di:waypoint x="640" y="1370" />
+				<di:waypoint x="238" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0xblkwm_di" bpmnElement="Flow_0xblkwm">
+				<di:waypoint x="520" y="1019" />
+				<di:waypoint x="520" y="1370" />
+				<di:waypoint x="238" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0j1bdml_di" bpmnElement="Flow_0j1bdml">
+				<di:waypoint x="400" y="1019" />
+				<di:waypoint x="400" y="1370" />
+				<di:waypoint x="238" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0654thb_di" bpmnElement="Flow_0654thb">
+				<di:waypoint x="270" y="1019" />
+				<di:waypoint x="270" y="1370" />
+				<di:waypoint x="238" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1ic287a_di" bpmnElement="Flow_1ic287a">
+				<di:waypoint x="465" y="800" />
+				<di:waypoint x="640" y="800" />
+				<di:waypoint x="640" y="939" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="646" y="866" width="67" height="27" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_03a9xzk_di" bpmnElement="Flow_03a9xzk">
+				<di:waypoint x="465" y="800" />
+				<di:waypoint x="520" y="800" />
+				<di:waypoint x="520" y="939" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="522" y="866" width="76" height="27" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_09thq7l_di" bpmnElement="Flow_09thq7l">
+				<di:waypoint x="415" y="800" />
+				<di:waypoint x="390" y="800" />
+				<di:waypoint x="390" y="939" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="400" y="873" width="79" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0mz635n_di" bpmnElement="Flow_0mz635n">
+				<di:waypoint x="415" y="800" />
+				<di:waypoint x="270" y="800" />
+				<di:waypoint x="270" y="939" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="279" y="873" width="82" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_05h3r0k_di" bpmnElement="Flow_05h3r0k">
+				<di:waypoint x="440" y="700" />
+				<di:waypoint x="440" y="775" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1flhc3q_di" bpmnElement="Flow_1flhc3q">
+				<di:waypoint x="-120" y="1279" />
+				<di:waypoint x="-191" y="1279" />
+				<di:waypoint x="-191" y="1370" />
+				<di:waypoint x="202" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0ds46yx_di" bpmnElement="Flow_0ds46yx">
+				<di:waypoint x="-120" y="1179" />
+				<di:waypoint x="-191" y="1179" />
+				<di:waypoint x="-191" y="1370" />
+				<di:waypoint x="202" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0uigydl_di" bpmnElement="Flow_0uigydl">
+				<di:waypoint x="-120" y="1079" />
+				<di:waypoint x="-191" y="1079" />
+				<di:waypoint x="-191" y="1370" />
+				<di:waypoint x="202" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1ft10e5_di" bpmnElement="Flow_1ft10e5">
+				<di:waypoint x="-120" y="979" />
+				<di:waypoint x="-191" y="979" />
+				<di:waypoint x="-191" y="1370" />
+				<di:waypoint x="202" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0rslvno_di" bpmnElement="Flow_0rslvno">
+				<di:waypoint x="-120" y="879" />
+				<di:waypoint x="-191" y="879" />
+				<di:waypoint x="-191" y="1370" />
+				<di:waypoint x="202" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_09klw69_di" bpmnElement="Flow_09klw69">
+				<di:waypoint x="-120" y="779" />
+				<di:waypoint x="-191" y="779" />
+				<di:waypoint x="-191" y="1370" />
+				<di:waypoint x="202" y="1370" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_19sq47c_di" bpmnElement="Flow_19sq47c">
+				<di:waypoint x="160" y="804" />
+				<di:waypoint x="160" y="1279" />
+				<di:waypoint x="-20" y="1279" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="20" y="1262" width="79" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1swbrue_di" bpmnElement="Flow_1swbrue">
+				<di:waypoint x="160" y="804" />
+				<di:waypoint x="160" y="1179" />
+				<di:waypoint x="-20" y="1179" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="19" y="1162" width="82" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1tmsnnb_di" bpmnElement="Flow_1tmsnnb">
+				<di:waypoint x="160" y="804" />
+				<di:waypoint x="160" y="1079" />
+				<di:waypoint x="-20" y="1079" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="30" y="1062" width="79" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0dlek4k_di" bpmnElement="Flow_0dlek4k">
+				<di:waypoint x="160" y="804" />
+				<di:waypoint x="160" y="979" />
+				<di:waypoint x="-20" y="979" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="29" y="962" width="82" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1xronf4_di" bpmnElement="Flow_1xronf4">
+				<di:waypoint x="160" y="804" />
+				<di:waypoint x="160" y="879" />
+				<di:waypoint x="-20" y="879" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="19" y="852" width="79" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0rnwfw9_di" bpmnElement="Flow_0rnwfw9">
+				<di:waypoint x="135" y="779" />
+				<di:waypoint x="-20" y="779" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="17" y="754" width="82" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1rrp31f_di" bpmnElement="Flow_1rrp31f">
+				<di:waypoint x="160" y="700" />
+				<di:waypoint x="160" y="754" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_197a3r8_di" bpmnElement="Flow_197a3r8">
+				<di:waypoint x="325" y="660" />
+				<di:waypoint x="390" y="660" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="346" y="636" width="7" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0gil37u_di" bpmnElement="Flow_0gil37u">
+				<di:waypoint x="276" y="661" />
+				<di:waypoint x="210" y="660" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="252" y="636" width="7" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1p49y51_di" bpmnElement="Flow_1p49y51">
+				<di:waypoint x="300" y="540" />
+				<di:waypoint x="300" y="635" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_01y1v3p_di" bpmnElement="Flow_01y1v3p">
+				<di:waypoint x="176" y="429" />
+				<di:waypoint x="250" y="473" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="201" y="448" width="7" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_1wg7w2d_di" bpmnElement="Flow_1wg7w2d">
+				<di:waypoint x="184" y="419" />
+				<di:waypoint x="440" y="420" />
+				<di:waypoint x="440" y="620" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="201" y="403" width="7" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_17unoow_di" bpmnElement="Flow_17unoow">
+				<di:waypoint x="160" y="445" />
+				<di:waypoint x="160" y="620" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="146" y="463" width="7" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0b053ak_di" bpmnElement="Flow_0b053ak">
+				<di:waypoint x="100" y="420" />
+				<di:waypoint x="135" y="420" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_0e3h5g6_di" bpmnElement="Flow_0e3h5g6">
+				<di:waypoint x="-30" y="420" />
+				<di:waypoint x="0" y="420" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNEdge id="Flow_18ykmp1_di" bpmnElement="Flow_18ykmp1">
+				<di:waypoint x="-173" y="420" />
+				<di:waypoint x="-130" y="420" />
+			</bpmndi:BPMNEdge>
+			<bpmndi:BPMNShape id="Activity_1wzmqa4_di" bpmnElement="Activity_1l5hday">
+				<dc:Bounds x="0" y="380" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Gateway_0qetpi9_di" bpmnElement="Gateway_0qetpi9" isMarkerVisible="true">
+				<dc:Bounds x="135" y="395" width="50" height="50" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_1q9pu2j_di" bpmnElement="Activity_1q9pu2j">
+				<dc:Bounds x="110" y="620" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0hhin6c_di" bpmnElement="Activity_0hhin6c">
+				<dc:Bounds x="390" y="620" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_036zh23_di" bpmnElement="Activity_0shb3ha">
+				<dc:Bounds x="-120" y="739" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0hbb6ii_di" bpmnElement="Activity_0hvzyen">
+				<dc:Bounds x="-120" y="839" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_001nojy_di" bpmnElement="Activity_001nojy">
+				<dc:Bounds x="-120" y="939" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Gateway_15f6q0s_di" bpmnElement="Gateway_15f6q0s" isMarkerVisible="true">
+				<dc:Bounds x="135" y="754" width="50" height="50" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_10hc1id_di" bpmnElement="Activity_0h58ncz">
+				<dc:Bounds x="-120" y="1039" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0vtonyg_di" bpmnElement="Activity_005dhr9">
+				<dc:Bounds x="-120" y="1139" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0rpbc6x_di" bpmnElement="Activity_0xbkg2c">
+				<dc:Bounds x="-120" y="1239" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Gateway_0x3rvsa_di" bpmnElement="Gateway_0x3rvsa" isMarkerVisible="true">
+				<dc:Bounds x="415" y="775" width="50" height="50" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_1u7smor_di" bpmnElement="Activity_1xqzyfb">
+				<dc:Bounds x="220" y="939" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_1ekaimz_di" bpmnElement="Activity_16ufaqh">
+				<dc:Bounds x="350" y="939" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_05jh5rm_di" bpmnElement="Activity_1hzunkj">
+				<dc:Bounds x="470" y="939" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_0b0if0l_di" bpmnElement="Activity_1y96r3a">
+				<dc:Bounds x="590" y="939" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Event_0c90bnk_di" bpmnElement="Event_0c90bnk">
+				<dc:Bounds x="202" y="1352" width="36" height="36" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="182" y="1328" width="75" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_106axs3_di" bpmnElement="Activity_11r589m">
+				<dc:Bounds x="-130" y="380" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Event_0qdcpdh_di" bpmnElement="Event_0qdcpdh">
+				<dc:Bounds x="-209" y="402" width="36" height="36" />
+				<bpmndi:BPMNLabel>
+					<dc:Bounds x="-215" y="448" width="47" height="14" />
+				</bpmndi:BPMNLabel>
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Activity_1kmuqa2_di" bpmnElement="Activity_03rl7q9">
+				<dc:Bounds x="250" y="460" width="100" height="80" />
+			</bpmndi:BPMNShape>
+			<bpmndi:BPMNShape id="Gateway_0p2rdyc_di" bpmnElement="Gateway_0p2rdyc" isMarkerVisible="true">
+				<dc:Bounds x="275" y="635" width="50" height="50" />
+			</bpmndi:BPMNShape>
+		</bpmndi:BPMNPlane>
+	</bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

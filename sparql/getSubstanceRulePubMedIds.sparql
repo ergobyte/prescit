@@ -1,0 +1,46 @@
+#
+#	Copyright 2023 Ergobyte Informatics S.A.
+#
+#	Licensed under the Apache License, Version 2.0 (the "License");
+#	you may not use this file except in compliance with the License.
+#	You may obtain a copy of the License at
+#
+#	    http://www.apache.org/licenses/LICENSE-2.0
+#
+#	Unless required by applicable law or agreed to in writing, software
+#	distributed under the License is distributed on an "AS IS" BASIS,
+#	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#	See the License for the specific language governing permissions and
+#	limitations under the License.
+#
+
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX meta: <http://semmeddbeh/metathesaurus#>
+PREFIX smdb: <http://semmeddbeh/turtle#>
+SELECT DISTINCT
+	?pmid
+WHERE {
+	{
+		SELECT ?cui WHERE {
+			?drug a owl:NamedIndividual .
+			?drug meta:CUI ?cui .
+			{
+				?drug meta:ATC ?atc .
+				FILTER(?atc IN ( @{atcList} )) .
+			}
+			UNION
+			{
+				?drug meta:DRUGBANK ?drugbank .
+				FILTER(?drugbank IN ( @{drugbankList} )) .
+			}
+		}
+	}
+	BIND(IRI(CONCAT("http://semmeddbeh/turtle#", ?cui)) AS ?smdbSubject) .
+	?evidence smdb:has_subject ?smdbSubject .
+	?evidence smdb:has_object ?smdbObject .
+	?evidence smdb:PMID ?pmid .
+	BIND(IRI(REPLACE(STR(?smdbObject), "turtle", "metathesaurus")) AS ?conceptIri) .
+	?conceptIri meta:MDR ?mdr .
+	FILTER(?mdr IN ( @{mdrList} )) .
+}
+LIMIT 10
